@@ -36,3 +36,19 @@ export const registerUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+export const loginUser = (req, res) => {
+  res.status(200).json({
+    message: "Logged in successfully",
+    user: { id: req.user.id, email: req.user.email },
+  });
+};
+
+export const logoutUser = (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.status(200).json({ message: "Logged out successfully" });
+  });
+};

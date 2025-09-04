@@ -1,11 +1,38 @@
 import "dotenv/config";
 import express from "express";
-import authRoutes from "./routes/authRoutes.js";
-const app = express();
+import session from "express-session";
+import passport from "passport";
+import { PrismaSessionStore } from "@quixo3/prisma-session-store";
+import { PrismaClient } from "@prisma/client";
 
-const PORT = process.env.PORT || 3000;
+import initializePassport from "./config/passport-config.js";
+import authRoutes from "./routes/authRoutes.js";
+
+initializePassport(passport);
+
+const app = express();
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+    store: new PrismaSessionStore(new PrismaClient(), {
+      checkPeriod: 2 * 60 * 1000,
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    }),
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get("/", (req, res) => {
   res.send("Server is up and running!");
@@ -14,5 +41,5 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
-  console.log(`server is running on port ${PORT}`);
+  console.log(`Server is listening on ${PORT}`);
 });
