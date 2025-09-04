@@ -7,6 +7,7 @@ import { PrismaClient } from "@prisma/client";
 
 import initializePassport from "./config/passport-config.js";
 import authRoutes from "./routes/authRoutes.js";
+import folderRoutes from "./routes/folderRoutes.js";
 
 initializePassport(passport);
 
@@ -39,6 +40,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/folders", folderRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
