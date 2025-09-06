@@ -8,6 +8,12 @@ import { PrismaClient } from "@prisma/client";
 import initializePassport from "./config/passport-config.js";
 import authRoutes from "./routes/authRoutes.js";
 import folderRoutes from "./routes/folderRoutes.js";
+import fileRoutes from "./routes/fileRoutes.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 initializePassport(passport);
 
@@ -41,6 +47,9 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/folders", folderRoutes);
+app.use("/api/files", fileRoutes);
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
