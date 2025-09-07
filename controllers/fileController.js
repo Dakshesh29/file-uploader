@@ -92,3 +92,38 @@ export const downloadFile = async (req, res) => {
     });
   }
 };
+
+export const previewFile = async (req, res) => {
+  const { fileId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const file = await prisma.file.findUnique({
+      where: { id: fileId, userId },
+    });
+
+    if (!file) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    const filePath = path.join(__dirname, "..", "uploads", file.storageName);
+
+    const previewableTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "application/pdf",
+      "text/plain",
+    ];
+
+    if (previewableTypes.includes(file.mimeType)) {
+      res.sendFile(filePath);
+    } else {
+      res.download(filePath, file.originalName);
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error processing file preview", error: error.message });
+  }
+};
