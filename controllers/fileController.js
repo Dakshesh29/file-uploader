@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import path from "path";
 import { fileURLToPath } from "url";
+
 const prisma = new PrismaClient();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,19 +12,45 @@ export const uploadFile = async (req, res) => {
       return res.status(400).json({ message: "Please upload a file" });
     }
 
-    const { folderId } = req.body;
+    const { folderId, tags } = req.body;
     const userId = req.user.id;
 
-    const newFile = await prisma.file.create({
-      data: {
-        originalName: req.file.originalname,
-        storageName: req.file.filename,
-        mimeType: req.file.mimetype,
-        size: req.file.size,
-        fileUrl: `/${req.file.path}`,
-        userId,
-        folderId,
-      },
+    const tagNames = tags
+      ? tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter((tag) => tag)
+      : [];
+
+    const newFile = await prisma.$transaction(async (tx) => {
+      // Create or find tags
+      const tagOperations = tagNames.map((name) =>
+        tx.tag.upsert({
+          where: { name },
+          update: {},
+          create: { name },
+        })
+      );
+      const createdOrFoundTags = await Promise.all(tagOperations);
+
+      // Create file with tag associations
+      const file = await tx.file.create({
+        data: {
+          originalName: req.file.originalname,
+          storageName: req.file.filename,
+          mimeType: req.file.mimetype,
+          size: req.file.size,
+          fileUrl: `/${req.file.path}`,
+          userId,
+          folderId,
+          tags: {
+            connect: createdOrFoundTags.map((tag) => ({ id: tag.id })),
+          },
+        },
+        include: { tags: true },
+      });
+
+      return file;
     });
 
     res.status(201).json(newFile);
@@ -37,7 +64,10 @@ export const uploadFile = async (req, res) => {
 export const getFiles = async (req, res) => {
   const userId = req.user.id;
   try {
-    const files = await prisma.file.findMany({ where: { userId } });
+    const files = await prisma.file.findMany({
+      where: { userId },
+      include: { tags: true },
+    });
     res.status(200).json(files);
   } catch (error) {
     res
@@ -50,8 +80,9 @@ export const getFileDetails = async (req, res) => {
   const { fileId } = req.params;
   const userId = req.user.id;
   try {
-    const file = await prisma.file.findUnique({
+    const file = await prisma.file.findFirst({
       where: { id: fileId, userId },
+      include: { tags: true },
     });
 
     if (!file) {
@@ -69,7 +100,7 @@ export const downloadFile = async (req, res) => {
   const { fileId } = req.params;
   const userId = req.user.id;
   try {
-    const file = await prisma.file.findUnique({
+    const file = await prisma.file.findFirst({
       where: { id: fileId, userId },
     });
 
@@ -98,7 +129,7 @@ export const previewFile = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const file = await prisma.file.findUnique({
+    const file = await prisma.file.findFirst({
       where: { id: fileId, userId },
     });
 
@@ -125,5 +156,48 @@ export const previewFile = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error processing file preview", error: error.message });
+  }
+};
+
+export const searchFiles = async (req, res) => {
+  const { q } = req.query;
+  const userId = req.user.id;
+
+  if (!q) {
+    return res.status(400).json({ message: "Search query is required" });
+  }
+
+  try {
+    const files = await prisma.file.findMany({
+      where: {
+        userId,
+        OR: [
+          {
+            originalName: {
+              contains: q,
+              mode: "insensitive",
+            },
+          },
+          {
+            tags: {
+              some: {
+                name: {
+                  contains: q,
+                  mode: "insensitive",
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        tags: true,
+      },
+    });
+    res.status(200).json(files);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error searching files", error: error.message });
   }
 };
