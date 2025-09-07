@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 import { formatInTimeZone } from "date-fns-tz";
+import { addDays } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -100,5 +101,39 @@ export const deleteFolder = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting folder", error: error.message });
+  }
+};
+
+export const createShareLink = async (req, res) => {
+  const { folderId } = req.params;
+  const { durationInDays } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const folder = await prisma.folder.findUnique({
+      where: { id: folderId, userId },
+    });
+    if (!folder) {
+      return res
+        .status(404)
+        .json({ message: "Folder not found or you do not have permission." });
+    }
+
+    const expiresAt = addDays(new Date(), durationInDays || 7);
+
+    const shareLink = await prisma.shareLink.upsert({
+      where: { folderId },
+      update: { expiresAt },
+      create: { folderId, expiresAt },
+    });
+
+    const shareUrl = `${req.protocol}://${req.get("host")}/share/${
+      shareLink.id
+    }`;
+    res.status(201).json({ url: shareUrl, expiresAt: shareLink.expiresAt });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating share link", error: error.message });
   }
 };

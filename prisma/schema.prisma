@@ -40,6 +40,8 @@ model Folder {
   parentId String?
 
   subFolders Folder[] @relation("SubFolders")
+
+  shareLinks ShareLink[]
 }
 
 model File {
@@ -73,4 +75,14 @@ model Session {
   sid       String   @unique
   data      String
   expiresAt DateTime
+}
+
+model ShareLink {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  expiresAt DateTime 
+
+  
+  folder   Folder @relation(fields: [folderId], references: [id])
+  folderId String @unique 
 }

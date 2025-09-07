@@ -5,6 +5,7 @@ import {
   getFolders,
   updateFolder,
   deleteFolder,
+  createShareLink,
 } from "../controllers/folderController.js";
 import { isAuthenticated } from "../middlewares/authMiddleware.js";
 
@@ -16,5 +17,6 @@ router.post("/", createFolder);
 router.get("/", getFolders);
 router.put("/:folderId", updateFolder);
 router.delete("/:folderId", deleteFolder);
+router.post("/:folderId/share", createShareLink);
 
 export default router;
