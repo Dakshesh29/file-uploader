@@ -32,7 +32,7 @@ router.get("/", (req, res) => {
   if (req.isAuthenticated()) {
     res.redirect("/dashboard");
   } else {
-    res.redirect("/login");
+    res.redirect("/register");
   }
 });
 
