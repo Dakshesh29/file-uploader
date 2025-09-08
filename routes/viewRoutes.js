@@ -9,6 +9,10 @@ router.get("/login", (req, res) => {
   res.render("login", { error: req.flash("error") });
 });
 
+router.get("/register", (req, res) => {
+  res.render("register", { error: null });
+});
+
 router.get("/dashboard", isAuthenticated, async (req, res) => {
   try {
     const userId = req.user.id;

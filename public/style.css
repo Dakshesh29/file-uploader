@@ -8,6 +8,7 @@ body {
   height: 100vh;
   margin: 0;
 }
+
 .container {
   background-color: #1d232a;
   padding: 40px;
@@ -17,21 +18,25 @@ body {
   max-width: 400px;
   text-align: center;
 }
+
 h1 {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 25px;
 }
+
 .form-group {
   margin-bottom: 20px;
   text-align: left;
 }
+
 label {
   display: block;
   margin-bottom: 8px;
   font-size: 0.9rem;
   color: #9ca3af;
 }
+
 input {
   width: 100%;
   padding: 12px;
@@ -40,8 +45,9 @@ input {
   background-color: #10141c;
   color: #e5e7eb;
   font-size: 1rem;
-  box-sizing: border-box;
+  box-sizing: border-box; /
 }
+
 button {
   width: 100%;
   padding: 12px;
@@ -54,10 +60,27 @@ button {
   cursor: pointer;
   transition: opacity 0.2s;
 }
+
 button:hover {
   opacity: 0.9;
 }
+
 .error {
   color: #f87171;
   margin-top: 15px;
+}
+
+.footer-link {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.footer-link a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.footer-link a:hover {
+  text-decoration: underline;
 }
