@@ -1,0 +1,250 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  color: #e5e7eb;
+}
+.text-xl {
+  font-size: 1.25rem;
+}
+.text-2xl {
+  font-size: 1.5rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+.sidebar {
+  width: 16rem;
+  flex-shrink: 0;
+  background-color: #1d232a;
+  border-right: 1px solid #475569;
+  display: flex;
+  flex-direction: column;
+}
+.main-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.sidebar-header {
+  height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #475569;
+}
+.sidebar-nav {
+  flex-grow: 1;
+  padding: 1rem;
+}
+.nav-link {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+}
+.nav-link.active {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+}
+
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  background-color: #1d232a;
+  padding: 1rem 1.5rem;
+
+  border: 1px solid #475569;
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.btn-logout {
+  background: #4b5563;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-logout:hover {
+  background: #6b7280;
+}
+
+.page-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  margin-right: 1rem;
+}
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+.btn-primary {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  color: white;
+}
+.btn-secondary {
+  background-color: #4b5563;
+  color: white;
+}
+.btn i {
+  width: 20px;
+  height: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.5rem;
+}
+.item {
+  background-color: #1d232a;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+.item:hover {
+  transform: translateY(-5px);
+}
+.item h3 {
+  margin: 0.5rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item p {
+  font-size: 0.875rem;
+  color: #9ca3af;
+  margin: 0;
+}
+.item i {
+  width: 48px;
+  height: 48px;
+}
+.folder i {
+  color: #3b82f6;
+}
+.file i {
+  color: #a5b4fc;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 4rem;
+  padding: 2rem;
+  border: 2px dashed #475569;
+  border-radius: 0.75rem;
+}
+.empty-state i {
+  width: 48px;
+  height: 48px;
+  color: #9ca3af;
+  margin: 0 auto;
+}
+.empty-state h3 {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+}
+.empty-state p {
+  color: #9ca3af;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal-content {
+  background-color: #1d232a;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  width: 90%;
+  max-width: 400px;
+}
+.modal-content h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 12px;
+  margin: 1rem 0;
+  border-radius: 8px;
+  border: 1px solid #4b5563;
+  background-color: #10141c;
+  color: #e5e7eb;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .app-container {
+    flex-direction: column;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+  .main-header,
+  .page-actions {
+    padding: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
