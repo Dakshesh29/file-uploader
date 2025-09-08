@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - SyncSphere</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/dashboard.css" />
+  </head>
+  <body class="bg-[#10141C]">
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h1 class="text-xl font-bold">SyncSphere</h1>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-link active">My Drive</a>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="main-header">
+          <h2 class="text-2xl font-bold">My Drive</h2>
+          <div class="header-actions">
+            <span><%= user.email %></span>
+            <form action="/api/auth/logout" method="POST">
+              <button type="submit" class="btn-logout">Logout</button>
+            </form>
+          </div>
+        </header>
+
+        <div class="page-actions">
+          <div class="search-bar"></div>
+          <div class="action-buttons">
+            <button id="newFolderBtn" class="btn btn-secondary">
+              <i data-lucide="folder-plus"></i> New Folder
+            </button>
+            <button id="uploadBtn" class="btn btn-primary">
+              <i data-lucide="upload-cloud"></i> Upload
+            </button>
+          </div>
+        </div>
+
+        <div class="grid">
+          <% folders.forEach(folder => { %>
+          <div class="item folder">
+            <i data-lucide="folder"></i>
+            <h3><%= folder.name %></h3>
+          </div>
+          <% }) %> <% files.forEach(file => { %>
+          <div class="item file">
+            <i data-lucide="file-text"></i>
+            <h3><%= file.originalName %></h3>
+            <p><%= (file.size / 1024).toFixed(2) %> KB</p>
+          </div>
+          <% }) %>
+        </div>
+
+        <% if (folders.length === 0 && files.length === 0) { %>
+        <div class="empty-state">
+          <i data-lucide="frown"></i>
+          <h3>It's a bit empty in here</h3>
+          <p>Click 'Upload' or 'New Folder' to get started.</p>
+        </div>
+        <% } %>
+      </main>
+    </div>
+
+    <div id="newFolderModal" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <h2>Create New Folder</h2>
+        <form id="newFolderForm">
+          <input
+            type="text"
+            id="newFolderName"
+            placeholder="Folder name"
+            required
+          />
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Create</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="uploadModal" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <h2>Upload File</h2>
+        <form id="uploadForm">
+          <input type="file" name="file" id="fileInput" required />
+          <input
+            type="text"
+            name="tags"
+            placeholder="Tags (e.g., work, invoice, 2025)"
+          />
+          <select name="folderId">
+            <option value="">Root</option>
+            <% folders.forEach(folder => { %>
+            <option value="<%= folder.id %>"><%= folder.name %></option>
+            <% }) %>
+          </select>
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel btn-secondary">
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+
+      // --- New Folder Modal Logic ---
+      const newFolderBtn = document.getElementById("newFolderBtn");
+      const newFolderModal = document.getElementById("newFolderModal");
+      const newFolderForm = document.getElementById("newFolderForm");
+
+      newFolderBtn.addEventListener(
+        "click",
+        () => (newFolderModal.style.display = "flex")
+      );
+      newFolderModal
+        .querySelector(".btn-cancel")
+        .addEventListener(
+          "click",
+          () => (newFolderModal.style.display = "none")
+        );
+
+      newFolderForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const folderName = document.getElementById("newFolderName").value;
+        const response = await fetch("/api/folders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: folderName }),
+          credentials: "include",
+        });
+        if (response.ok) location.reload();
+        else alert("Error creating folder.");
+      });
+
+      // --- Upload File Modal Logic ---
+      const uploadBtn = document.getElementById("uploadBtn");
+      const uploadModal = document.getElementById("uploadModal");
+      const uploadForm = document.getElementById("uploadForm");
+
+      uploadBtn.addEventListener(
+        "click",
+        () => (uploadModal.style.display = "flex")
+      );
+      uploadModal
+        .querySelector(".btn-cancel")
+        .addEventListener("click", () => (uploadModal.style.display = "none"));
+
+      uploadForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(uploadForm);
+        const response = await fetch("/api/files/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+        if (response.ok) location.reload();
+        else alert("Error uploading file.");
+      });
+    </script>
+  </body>
+</html>

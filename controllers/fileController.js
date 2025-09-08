@@ -33,7 +33,6 @@ export const uploadFile = async (req, res) => {
       );
       const createdOrFoundTags = await Promise.all(tagOperations);
 
-      // Create file with tag associations
       const file = await tx.file.create({
         data: {
           originalName: req.file.originalname,

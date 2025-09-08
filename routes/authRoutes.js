@@ -17,7 +17,14 @@ router.post(
   registerUser
 );
 
-router.post("/login", passport.authenticate("local"), loginUser);
+router.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+    failureFlash: true,
+  })
+);
 
 router.post("/logout", logoutUser);
 

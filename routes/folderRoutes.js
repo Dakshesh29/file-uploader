@@ -1,4 +1,3 @@
-// routes/folderRoutes.js
 import express from "express";
 import {
   createFolder,
