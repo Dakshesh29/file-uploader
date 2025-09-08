@@ -234,11 +234,18 @@ html {
   }
 
   .main-content {
-    padding: 1rem;
-  }
-  .main-header,
-  .page-actions {
     padding: 0;
+  }
+  .main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0;
+  }
+  .page-actions {
+    padding: 0 1rem;
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
